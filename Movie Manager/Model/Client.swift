@@ -12,6 +12,7 @@ class Client{
 
     static let apiKey="97cf4fbadae43c0e1c7f6dad60616d96"
     struct Auth {
+        static var accountId=0
         static var requestToken=""
         static var sessionId=""
     }
@@ -22,6 +23,7 @@ class Client{
         case authentication
         case requestSessionId
         case logout
+        case getWatchList
         var stringValue:String{
             switch self {
             case .requestNewToken:
@@ -35,6 +37,9 @@ class Client{
                 
             case .logout:
                 return "https://api.themoviedb.org/3/authentication/session?api_key="+apiKey
+            
+            case.getWatchList:
+                return "https://api.themoviedb.org/3/account/\(Auth.accountId)/watchlist/movies?api_key=\(apiKey)&language=en-US&sort_by=created_at.asc&page=1&session_id=\(Auth.sessionId)"
            
             }
         }
@@ -129,6 +134,27 @@ class Client{
         let encoder=JSONEncoder()
         request.httpBody=try!encoder.encode(deleteRequest)
         let task=URLSession.shared.dataTask(with: request)
+        task.resume()
+    }
+    
+    class func getWatchList(completionHandler:@escaping([Movie]?,Error?)->Void){
+        let url=Endpoint.getWatchList.url
+        let task=URLSession.shared.dataTask(with: url) { (data, response, error) in
+            guard let data=data else{
+                completionHandler(nil,error)
+                return
+            }
+            let decoder=JSONDecoder()
+            do{
+                let response=try decoder.decode(MovieResultResponse.self, from: data)
+                let movies=response.results
+                completionHandler(movies,nil)
+            }
+            catch{
+                completionHandler(nil,error)
+                print(error)
+            }
+        }
         task.resume()
     }
 }

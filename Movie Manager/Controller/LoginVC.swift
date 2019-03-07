@@ -14,6 +14,7 @@ class LoginVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+       
     }
     
     @IBAction func loginTapped(_ sender: Any) {
@@ -49,7 +50,6 @@ class LoginVC: UIViewController {
             print(Client.Auth.sessionId)
             DispatchQueue.main.async {
                 self.performSegue(withIdentifier: "completeLogin", sender: nil)
-
             }
         }
         else{
