@@ -188,5 +188,24 @@ class Client{
         task.resume()
     }
     
-    
+    class func getFavouritesList(completionHandler:@escaping([Movie]?,Error?)->Void){
+        let url=self.Endpoint.getFavList.url
+        let task=URLSession.shared.dataTask(with: url) { (data, response, error) in
+            guard let data=data else{
+                completionHandler(nil,error)
+                return
+            }
+            let decoder=JSONDecoder()
+            do{
+                let resultResponse=try decoder.decode(MovieResultResponse.self, from: data)
+                let movies=resultResponse.results
+                completionHandler(movies,nil)
+            }
+            catch{
+                completionHandler(nil,error)
+                print(error)
+            }
+        }
+        task.resume()
+    }
 }
