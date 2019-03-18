@@ -24,6 +24,9 @@ class Client{
         case requestSessionId
         case logout
         case getWatchList
+        case getMovieDetails(id:Int)
+        case searchMovie(movieName:String)
+        case getFavList
         var stringValue:String{
             switch self {
             case .requestNewToken:
@@ -40,6 +43,12 @@ class Client{
             
             case.getWatchList:
                 return "https://api.themoviedb.org/3/account/\(Auth.accountId)/watchlist/movies?api_key=\(apiKey)&language=en-US&sort_by=created_at.asc&page=1&session_id=\(Auth.sessionId)"
+            case .getMovieDetails(let id):
+                return "https://api.themoviedb.org/3/movie/{\(id)}/images?api_key=\(apiKey)&language=en-US"
+            case .searchMovie(let movieName):
+                return "https://api.themoviedb.org/3/search/movie?api_key=\(apiKey)&language=en-US&query=\(movieName)&page=1&include_adult=false"
+            case .getFavList:
+                return "https://api.themoviedb.org/3/account/\(Auth.accountId)/favorite/movies?api_key=\(apiKey)&language=en-US&sort_by=created_at.asc&page=1&session_id=\(Auth.sessionId)"
            
             }
         }
@@ -157,4 +166,27 @@ class Client{
         }
         task.resume()
     }
+    
+    class func searchMovie(movieName:String,completionHandler:@escaping([Movie]?,Error?)->Void){
+        let url=Endpoint.searchMovie(movieName: movieName).url
+        let task=URLSession.shared.dataTask(with: url) { (data, response, error) in
+            guard let data=data else{
+                completionHandler(nil,error)
+                return
+            }
+            let decoder=JSONDecoder()
+            do{
+                let response=try decoder.decode(MovieResultResponse.self, from: data)
+                let movies=response.results
+                completionHandler(movies,nil)
+            }
+            catch{
+                completionHandler(nil,error)
+                print(error)
+            }
+        }
+        task.resume()
+    }
+    
+    
 }

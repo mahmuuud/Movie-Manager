@@ -54,4 +54,9 @@ class WatchlistVC: UITableViewController{
                             heightForRowAt indexPath: IndexPath) -> CGFloat{
         return 100.0
     }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let movieDetailsVC=self.storyboard?.instantiateViewController(withIdentifier: "movieDetails")
+        self.navigationController?.pushViewController(movieDetailsVC!, animated: true)
+    }
 }
