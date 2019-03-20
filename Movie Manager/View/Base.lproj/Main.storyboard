@@ -332,6 +332,7 @@
                     </view>
                     <connections>
                         <outlet property="favBtn" destination="q3h-kv-bUI" id="8aL-Ha-MZT"/>
+                        <outlet property="imageView" destination="S2r-Qm-NJK" id="lgz-5H-hd1"/>
                         <outlet property="watchlistBtn" destination="BOF-Bl-oYz" id="GWT-dW-QU9"/>
                     </connections>
                 </viewController>

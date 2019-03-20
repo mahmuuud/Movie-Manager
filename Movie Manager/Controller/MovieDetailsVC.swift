@@ -10,12 +10,16 @@ import Foundation
 import UIKit
 class MovieDetailsVC:UIViewController{
     
+    @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var favBtn: UIBarButtonItem!
     @IBOutlet weak var watchlistBtn: UIBarButtonItem!
     var currentMovie:Movie!
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
+        Client.getPoster(posterPath: currentMovie.posterPath ?? "", completionHandler: handlePoster(image:error:))
+           
+        
       
     }
     
@@ -28,10 +32,12 @@ class MovieDetailsVC:UIViewController{
         if !MovieModel.isFavourite(movie: currentMovie) {
             self.favBtn.tintColor=self.view.tintColor
             Client.addToFavourites(movieId: currentMovie.id,favorite: true)
+            MovieModel.favourites.append(currentMovie)
         }
         else{
             self.favBtn.tintColor=UIColor.gray
             Client.addToFavourites(movieId: currentMovie.id,favorite: false)
+            MovieModel.favourites=MovieModel.favourites.filter(){$0.id != self.currentMovie.id}
         }
     }
     
@@ -39,10 +45,12 @@ class MovieDetailsVC:UIViewController{
         if !MovieModel.isWatchlist(movie: currentMovie){
             Client.addToWatchlist(movieId: currentMovie.id,watchlist: true)
              self.watchlistBtn.tintColor=self.view.tintColor
+            MovieModel.watchList.append(currentMovie)
         }
         else{
             Client.addToWatchlist(movieId: currentMovie.id, watchlist: false)
             self.watchlistBtn.tintColor=UIColor.gray
+            MovieModel.watchList = MovieModel.watchList.filter(){$0.id != self.currentMovie.id}
         }
     }
     
@@ -58,6 +66,16 @@ class MovieDetailsVC:UIViewController{
         }
         else{
             favBtn.tintColor=UIColor.gray
+        }
+    }
+    
+    func handlePoster(image:UIImage?,error:Error?){
+        guard let image=image else{
+            print(error as Any)
+            return
+        }
+        DispatchQueue.main.async {
+            self.imageView.image=image
         }
     }
     

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class Client{
 
@@ -29,6 +30,7 @@ class Client{
         case getFavList
         case addToWatchlist
         case addToFav
+        case getPoster(posterPath:String)
         var stringValue:String{
             switch self {
             case .requestNewToken:
@@ -55,6 +57,8 @@ class Client{
                 return "https://api.themoviedb.org/3/account/\(Auth.sessionId)/watchlist?api_key=\(apiKey)&session_id=\(Auth.sessionId)"
             case .addToFav:
                 return "https://api.themoviedb.org/3/account/\(Auth.accountId)/favorite?api_key=\(apiKey)&session_id=\(Auth.sessionId)"
+            case .getPoster(let path):
+                return "https://image.tmdb.org/t/p/w500/\(path)"
            
             }
         }
@@ -236,6 +240,19 @@ class Client{
         let encoder=JSONEncoder()
         request.httpBody=try! encoder.encode(body)
         let task=URLSession.shared.dataTask(with: request)
+        task.resume()
+    }
+    
+    class func getPoster(posterPath:String,completionHandler:@escaping (UIImage?,Error?)->Void){
+        let url:URL = self.Endpoint.getPoster(posterPath: posterPath).url
+        let task=URLSession.shared.dataTask(with: url ) { (data, response, error) in
+            guard let data=data else{
+                completionHandler(nil,error)
+                return
+            }
+            let image=UIImage(data: data)
+            completionHandler(image,nil)
+        }
         task.resume()
     }
 }
