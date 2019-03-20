@@ -69,7 +69,7 @@ class MovieDetailsVC:UIViewController{
         }
     }
     
-    func handlePoster(image:UIImage?,error:Error?){
+     func handlePoster(image:UIImage?,error:Error?){
         guard let image=image else{
             print(error as Any)
             return

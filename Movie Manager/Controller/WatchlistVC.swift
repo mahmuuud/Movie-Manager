@@ -45,6 +45,16 @@ class WatchlistVC: UITableViewController{
         let cell=tableView.dequeueReusableCell(withIdentifier: "watchlistCell")
         let movie=MovieModel.watchList[indexPath.row]
         cell?.textLabel?.text=movie.title
+        Client.getPoster(posterPath: movie.posterPath ?? "") { (image, error) in
+            guard let image=image else{
+                print (error as Any)
+                return
+            }
+            DispatchQueue.main.async {
+                cell?.imageView?.image=image
+                cell?.setNeedsLayout()
+            }
+        }
         return cell!
     }
     

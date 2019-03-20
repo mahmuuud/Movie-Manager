@@ -45,7 +45,18 @@ class FavouritesVC:UITableViewController{
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell=tableView.dequeueReusableCell(withIdentifier: "favCell")
-        cell?.textLabel?.text=MovieModel.favourites[indexPath.row].title
+        let movie=MovieModel.favourites[indexPath.row]
+        cell?.textLabel?.text=movie.title
+        Client.getPoster(posterPath: movie.posterPath ?? "") { (image, error) in
+            guard let image=image else{
+                print (error as Any)
+                return
+            }
+            DispatchQueue.main.async {
+                cell?.imageView?.image=image
+                cell?.setNeedsLayout()
+            }
+        }
         return cell!
     }
     
