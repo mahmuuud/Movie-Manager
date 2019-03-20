@@ -19,6 +19,12 @@ class SearchVC: UIViewController,UITableViewDelegate,UITableViewDataSource,UISea
         moviesTable.delegate=self
         moviesTable.dataSource=self
         searchBar.delegate=self
+        self.tabBarController?.tabBar.isHidden=false
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.tabBarController?.tabBar.isHidden=false
     }
 
     @IBAction func dismissSearchVC(_ sender: Any) {
@@ -29,8 +35,9 @@ class SearchVC: UIViewController,UITableViewDelegate,UITableViewDataSource,UISea
     }
     
      func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let movieDetailsVC=self.storyboard?.instantiateViewController(withIdentifier: "movieDetails")
-        self.navigationController?.pushViewController(movieDetailsVC!, animated: true)
+        let movieDetailsVC=self.storyboard?.instantiateViewController(withIdentifier: "movieDetails") as! MovieDetailsVC
+        movieDetailsVC.currentMovie=self.movies[indexPath.row]
+        self.navigationController?.pushViewController(movieDetailsVC, animated: true)
     }
     
     internal func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -46,13 +53,14 @@ class SearchVC: UIViewController,UITableViewDelegate,UITableViewDataSource,UISea
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         print("Search bar ended editing")
-        guard var movieName=self.searchBar.text else{
-            return
+        DispatchQueue.main.async {
+            self.moviesTable.reloadData()
+            searchBar.resignFirstResponder()
         }
-        if movieName.contains(" "){
-          movieName = movieName.replacingOccurrences(of: " ", with: "%20")
-        }
-        Client.searchMovie(movieName: movieName) { (movies, error) in
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        Client.searchMovie(movieName: searchText) { (movies, error) in
             guard let movies=movies else{
                 print(error ?? "error searching")
                 return
@@ -60,8 +68,8 @@ class SearchVC: UIViewController,UITableViewDelegate,UITableViewDataSource,UISea
             self.movies=movies
             DispatchQueue.main.async {
                 self.moviesTable.reloadData()
-                searchBar.resignFirstResponder()
             }
+          
         }
     }
     

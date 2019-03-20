@@ -18,6 +18,7 @@ class FavouritesVC:UITableViewController{
         moviesTable.delegate=self
         moviesTable.dataSource=self
         moviesTable.reloadData()
+        self.tabBarController?.tabBar.isHidden=false
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -31,13 +32,15 @@ class FavouritesVC:UITableViewController{
             print(movie.title)
             DispatchQueue.main.async {
                 self.moviesTable.reloadData()
+                self.tabBarController?.tabBar.isHidden=false
             }
         }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let movieDetailsVC=self.storyboard?.instantiateViewController(withIdentifier: "movieDetails")
-        self.navigationController?.pushViewController(movieDetailsVC!, animated: true)
+        let movieDetailsVC=self.storyboard?.instantiateViewController(withIdentifier: "movieDetails") as! MovieDetailsVC
+        movieDetailsVC.currentMovie=MovieModel.favourites[indexPath.row]
+        self.navigationController?.pushViewController(movieDetailsVC, animated: true)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

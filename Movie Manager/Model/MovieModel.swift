@@ -10,4 +10,22 @@ import Foundation
 struct MovieModel {
     static var watchList:[Movie]=[]
     static var favourites:[Movie]=[]
+    
+    static func isWatchlist(movie:Movie)->Bool{
+        for m in watchList{
+            if m.id==movie.id{
+                return true
+            }
+        }
+        return false
+    }
+    
+    static func isFavourite(movie:Movie)->Bool{
+        for m in favourites{
+            if m.id==movie.id{
+                return true
+            }
+        }
+        return false
+    }
 }

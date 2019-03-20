@@ -16,6 +16,7 @@ class WatchlistVC: UITableViewController{
         table.delegate=self
         table.dataSource=self
         table.reloadData()
+        self.tabBarController?.tabBar.isHidden=false
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -25,6 +26,7 @@ class WatchlistVC: UITableViewController{
             MovieModel.watchList=movies!
             print(movie.title)
             DispatchQueue.main.async {
+                self.tabBarController?.tabBar.isHidden=false
                 self.table.reloadData()
             }
         }
@@ -56,7 +58,8 @@ class WatchlistVC: UITableViewController{
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let movieDetailsVC=self.storyboard?.instantiateViewController(withIdentifier: "movieDetails")
-        self.navigationController?.pushViewController(movieDetailsVC!, animated: true)
+        let movieDetailsVC=self.storyboard?.instantiateViewController(withIdentifier: "movieDetails") as! MovieDetailsVC
+        movieDetailsVC.currentMovie=MovieModel.watchList[indexPath.row]
+        self.navigationController?.pushViewController(movieDetailsVC, animated: true)
     }
 }

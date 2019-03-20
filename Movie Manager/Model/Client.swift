@@ -27,6 +27,7 @@ class Client{
         case getMovieDetails(id:Int)
         case searchMovie(movieName:String)
         case getFavList
+        case addToWatchlist
         var stringValue:String{
             switch self {
             case .requestNewToken:
@@ -46,9 +47,11 @@ class Client{
             case .getMovieDetails(let id):
                 return "https://api.themoviedb.org/3/movie/{\(id)}/images?api_key=\(apiKey)&language=en-US"
             case .searchMovie(let movieName):
-                return "https://api.themoviedb.org/3/search/movie?api_key=\(apiKey)&language=en-US&query=\(movieName)&page=1&include_adult=false"
+                return "https://api.themoviedb.org/3/search/movie?api_key=\(apiKey)&language=en-US&query=\(movieName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&page=1&include_adult=false"
             case .getFavList:
                 return "https://api.themoviedb.org/3/account/\(Auth.accountId)/favorite/movies?api_key=\(apiKey)&language=en-US&sort_by=created_at.asc&page=1&session_id=\(Auth.sessionId)"
+            case .addToWatchlist:
+                return "https://api.themoviedb.org/3/account/\(Auth.sessionId)/watchlist?api_key=\(apiKey)&session_id=\(Auth.sessionId)"
            
             }
         }
@@ -208,4 +211,18 @@ class Client{
         }
         task.resume()
     }
+    
+    class func addToWatchlist(movieId:Int){
+        let url=self.Endpoint.addToWatchlist.url
+        var request=URLRequest(url: url)
+        let body=AddToWatchlistRequest.init(mediaType: "movie", mediaId: movieId, watchlist: true)
+        request.httpMethod="POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        let encoder=JSONEncoder()
+        request.httpBody=try! encoder.encode(body)
+        let task=URLSession.shared.dataTask(with: request)
+        task.resume()
+    }
+    
+    
 }
