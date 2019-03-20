@@ -28,6 +28,7 @@ class Client{
         case searchMovie(movieName:String)
         case getFavList
         case addToWatchlist
+        case addToFav
         var stringValue:String{
             switch self {
             case .requestNewToken:
@@ -52,6 +53,8 @@ class Client{
                 return "https://api.themoviedb.org/3/account/\(Auth.accountId)/favorite/movies?api_key=\(apiKey)&language=en-US&sort_by=created_at.asc&page=1&session_id=\(Auth.sessionId)"
             case .addToWatchlist:
                 return "https://api.themoviedb.org/3/account/\(Auth.sessionId)/watchlist?api_key=\(apiKey)&session_id=\(Auth.sessionId)"
+            case .addToFav:
+                return "https://api.themoviedb.org/3/account/\(Auth.accountId)/favorite?api_key=\(apiKey)&session_id=\(Auth.sessionId)"
            
             }
         }
@@ -212,10 +215,10 @@ class Client{
         task.resume()
     }
     
-    class func addToWatchlist(movieId:Int){
+    class func addToWatchlist(movieId:Int,watchlist:Bool){
         let url=self.Endpoint.addToWatchlist.url
         var request=URLRequest(url: url)
-        let body=AddToWatchlistRequest.init(mediaType: "movie", mediaId: movieId, watchlist: true)
+        let body=AddToWatchlistRequest.init(mediaType: "movie", mediaId: movieId, watchlist: watchlist)
         request.httpMethod="POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         let encoder=JSONEncoder()
@@ -224,5 +227,15 @@ class Client{
         task.resume()
     }
     
-    
+    class func addToFavourites(movieId:Int,favorite:Bool){
+        let url=self.Endpoint.addToFav.url
+        var request=URLRequest(url: url)
+        let body=AddToFavRequest.init(mediaType: "movie", mediaId: movieId, favorite: favorite)
+        request.httpMethod="POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        let encoder=JSONEncoder()
+        request.httpBody=try! encoder.encode(body)
+        let task=URLSession.shared.dataTask(with: request)
+        task.resume()
+    }
 }

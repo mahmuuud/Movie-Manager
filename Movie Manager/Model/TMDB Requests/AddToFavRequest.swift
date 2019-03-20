@@ -10,11 +10,11 @@ import Foundation
 struct AddToFavRequest:Codable {
     var mediaType:String
     var mediaId:Int
-    var favourite:Bool
+    var favorite:Bool
     
     enum CodingKeys:String,CodingKey{
         case mediaType="media_type"
         case mediaId="media_id"
-        case favourite
+        case favorite
     }
 }

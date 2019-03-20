@@ -25,16 +25,25 @@ class MovieDetailsVC:UIViewController{
     }
     
     @IBAction func favBtnTapped(_ sender: Any) {
-        
+        if !MovieModel.isFavourite(movie: currentMovie) {
+            self.favBtn.tintColor=self.view.tintColor
+            Client.addToFavourites(movieId: currentMovie.id,favorite: true)
+        }
+        else{
+            self.favBtn.tintColor=UIColor.gray
+            Client.addToFavourites(movieId: currentMovie.id,favorite: false)
+        }
     }
     
     @IBAction func watchlistBtnTapped(_ sender: Any) {
-        configureUI()
         if !MovieModel.isWatchlist(movie: currentMovie){
-            Client.addToWatchlist(movieId: currentMovie.id)
+            Client.addToWatchlist(movieId: currentMovie.id,watchlist: true)
+             self.watchlistBtn.tintColor=self.view.tintColor
         }
-        
-        print(currentMovie.id)
+        else{
+            Client.addToWatchlist(movieId: currentMovie.id, watchlist: false)
+            self.watchlistBtn.tintColor=UIColor.gray
+        }
     }
     
     func configureUI(){
